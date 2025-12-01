@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Module>
+    <Name value="Capture Ships On Victory"/>
+    <Id value="CaptureShipsOnVictory"/>
+    <Version value="v1.0.2"/>
+    <SingleplayerModule value="true"/>
+    <MultiplayerModule value="false"/>
+    <DependedModules>
+        <DependedModule Id="Native"/>
+        <DependedModule Id="SandBoxCore"/>
+        <DependedModule Id="Sandbox"/>
+        <DependedModule Id="Bannerlord.Harmony"/>
+        <DependedModule Id="NavalDLC"/>
+    </DependedModules>
+    <SubModules>
+        <SubModule>
+            <Name value="CaptureShipsOnVictory"/>
+            <DLLName value="CaptureShipsOnVictory.dll"/>
+            <SubModuleClassType value="CaptureShipsOnVictory.SubModule"/>
+            <Tags>
+                <Tag key="DedicatedServerType" value="none" />
+                <Tag key="IsNoRenderModeElement" value="false" />
+            </Tags>
+        </SubModule>
+    </SubModules>
+    <Xmls>
+    </Xmls>
+</Module>
+
