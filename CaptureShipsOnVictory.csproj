@@ -60,6 +60,14 @@
       <HintPath>lib\TaleWorlds.MountAndBlade.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem">
+      <HintPath>lib\TaleWorlds.ObjectSystem.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Localization">
+      <HintPath>lib\TaleWorlds.Localization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NavalDLC">
       <HintPath>lib\NavalDLC.dll</HintPath>
       <Private>False</Private>
