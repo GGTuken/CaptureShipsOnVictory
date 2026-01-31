@@ -6,6 +6,7 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using System;
@@ -298,10 +299,65 @@ namespace CaptureShipsOnVictory
                 }
 
                 SubModule.LogMessage($"  Distribution complete: {shipsGiven} ships given to player");
+
+                // Open fleet management screen if enabled
+                if (shipsGiven > 0 && Settings.Instance?.OpenNavalTabAfterCapture == true)
+                {
+                    try
+                    {
+                        SubModule.LogMessage("  Opening fleet management screen...");
+                        OpenFleetManagementScreen();
+                    }
+                    catch (Exception ex)
+                    {
+                        SubModule.LogMessage($"  ERROR opening fleet screen: {ex.Message}");
+                    }
+                }
             }
             catch (Exception ex)
             {
                 SubModule.LogMessage($"ERROR in DistributeShipsOnSurrender: {ex.Message}\n{ex.StackTrace}");
+            }
+        }
+
+        private static void OpenFleetManagementScreen()
+        {
+            try
+            {
+                // Open fleet management screen using PortState
+                // OpenAsManageFleet with empty list shows player's own fleet
+                var emptyShipList = new MBList<Ship>();
+
+                // Try to use PortStateHelper via reflection first (it's in Helpers namespace)
+                var portStateHelperType = Type.GetType("Helpers.PortStateHelper, TaleWorlds.CampaignSystem");
+                if (portStateHelperType != null)
+                {
+                    var openMethod = portStateHelperType.GetMethod("OpenAsManageFleet",
+                        BindingFlags.Public | BindingFlags.Static);
+
+                    if (openMethod != null)
+                    {
+                        openMethod.Invoke(null, new object[] { emptyShipList });
+                        SubModule.LogMessage("  Fleet management screen opened via PortStateHelper");
+                        return;
+                    }
+                }
+
+                // Fallback: use GameStateManager directly (same as PortStateHelper.OpenAsManageFleet)
+                var portState = GameStateManager.Current.CreateState<PortState>(new object[]
+                {
+                    null,
+                    PartyBase.MainParty,
+                    emptyShipList,
+                    PartyBase.MainParty.Ships,
+                    PortScreenModes.Manage
+                });
+                GameStateManager.Current.PushState(portState);
+                SubModule.LogMessage("  Fleet management screen opened via GameStateManager");
+            }
+            catch (Exception ex)
+            {
+                SubModule.LogMessage($"  Failed to open fleet screen: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -346,6 +402,20 @@ namespace CaptureShipsOnVictory
             for (int i = shipsToGive; i < ships.Count; i++)
             {
                 DestroyShipAction.Apply(ships[i]);
+            }
+
+            // Open fleet management screen if enabled
+            if (shipsToGive > 0 && Settings.Instance?.OpenNavalTabAfterCapture == true)
+            {
+                try
+                {
+                    SubModule.LogMessage("  Opening fleet management screen after direct transfer...");
+                    OpenFleetManagementScreen();
+                }
+                catch (Exception ex)
+                {
+                    SubModule.LogMessage($"  ERROR opening fleet screen: {ex.Message}");
+                }
             }
         }
     }

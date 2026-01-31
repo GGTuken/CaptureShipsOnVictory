@@ -11,6 +11,7 @@ namespace CaptureShipsOnVictory
     internal sealed class Settings : AttributeGlobalSettings<Settings>
     {
         private int _maxShipsLootPerBattle = 25;
+        private bool _openNavalTabAfterCapture = true;
 
         public override string Id => "CaptureShipsOnVictory_Settings";
         public override string DisplayName => "Capture Ships On Victory";
@@ -32,6 +33,25 @@ namespace CaptureShipsOnVictory
                 if (_maxShipsLootPerBattle != value)
                 {
                     _maxShipsLootPerBattle = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Whether to open the naval tab (fleet management screen) after capturing ships during surrender.
+        /// </summary>
+        [SettingPropertyBool("Open naval tab after capture", Order = 1, RequireRestart = false,
+            HintText = "If enabled, opens the fleet management screen after capturing ships from surrendering parties.")]
+        [SettingPropertyGroup("General")]
+        public bool OpenNavalTabAfterCapture
+        {
+            get => _openNavalTabAfterCapture;
+            set
+            {
+                if (_openNavalTabAfterCapture != value)
+                {
+                    _openNavalTabAfterCapture = value;
                     OnPropertyChanged();
                 }
             }
