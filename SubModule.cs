@@ -96,9 +96,14 @@ namespace CaptureShipsOnVictory
             if (playerParty != null)
             {
                 int playerShipsBefore = resultList.Count(x => x.Value != null && x.Value.Party == TaleWorlds.CampaignSystem.Party.PartyBase.MainParty);
+                int playerShipsAdded = 0;
+                int limit = Settings.Instance?.MaxShipsLootPerBattle ?? 25;
 
                 foreach (var ship in shipsToLoot)
                 {
+                    if (playerShipsBefore + playerShipsAdded >= limit)
+                        break;
+
                     if (!resultList.Any(x => x.Key == ship && x.Value != null && x.Value.Party == TaleWorlds.CampaignSystem.Party.PartyBase.MainParty))
                     {
                         var existing = resultList.FirstOrDefault(x => x.Key == ship);
@@ -107,12 +112,13 @@ namespace CaptureShipsOnVictory
                             resultList.Remove(existing);
                         }
                         resultList.Add(new KeyValuePair<Ship, MapEventParty>(ship, playerParty));
+                        playerShipsAdded++;
                         SubModule.LogMessage($"  Postfix: Added ship to player (HP: {ship.HitPoints}/{ship.MaxHitPoints})");
                     }
                 }
 
                 int playerShipsAfter = resultList.Count(x => x.Value != null && x.Value.Party == TaleWorlds.CampaignSystem.Party.PartyBase.MainParty);
-                SubModule.LogMessage($"Result: player gets {playerShipsAfter} ships (was {playerShipsBefore})");
+                SubModule.LogMessage($"Result: player gets {playerShipsAfter} ships (limit {limit}, was {playerShipsBefore})");
             }
 
             __result = new MBReadOnlyList<KeyValuePair<Ship, MapEventParty>>(resultList);
